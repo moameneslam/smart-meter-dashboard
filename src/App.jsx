@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-const KEYS = "voltage,current_L1,current_L2,power_L1,power_L2,energy_L1,energy_L2";
+import {
+  LineChart, Line, BarChart, Bar,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+} from "recharts";
 
 async function fetchLatest() {
   const res = await fetch(`/api/telemetry`);
@@ -32,8 +35,7 @@ export default function App() {
 
   const loadLatest = async () => {
     try {
-      const token = await getToken();
-      const data = await fetchLatest(token);
+      const data = await fetchLatest();
       setLive({
         voltage:    parseFloat(data.voltage?.[0]?.value ?? 0).toFixed(1),
         current_L1: parseFloat(data.current_L1?.[0]?.value ?? 0).toFixed(2),
@@ -52,8 +54,7 @@ export default function App() {
 
   const loadHistory = async () => {
     try {
-      const token = await getToken();
-      const data = await fetchHistory(token);
+      const data = await fetchHistory();
       const power_L1 = data.power_L1 ?? [];
       const power_L2 = data.power_L2 ?? [];
       const merged = power_L1.map((p, i) => ({
