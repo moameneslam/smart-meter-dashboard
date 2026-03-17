@@ -1,16 +1,11 @@
-import { useState, useEffect } from "react";
-import {
-  LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from "recharts";
-
 const DEVICE_ID = import.meta.env.VITE_TB_DEVICE_ID;
 const EMAIL = import.meta.env.VITE_TB_EMAIL;
 const PASSWORD = import.meta.env.VITE_TB_PASSWORD;
 const KEYS = "voltage,current_L1,current_L2,power_L1,power_L2,energy_L1,energy_L2";
+const TB_URL = "https://thingsboard.cloud";
 
 async function getToken() {
-  const res = await fetch(`/tb-api/api/auth/login`, {
+  const res = await fetch(`${TB_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username: EMAIL, password: PASSWORD })
@@ -21,7 +16,7 @@ async function getToken() {
 
 async function fetchLatest(token) {
   const res = await fetch(
-    `/tb-api/api/plugins/telemetry/DEVICE/${DEVICE_ID}/values/timeseries?keys=${KEYS}`,
+    `${TB_URL}/api/plugins/telemetry/DEVICE/${DEVICE_ID}/values/timeseries?keys=${KEYS}`,
     { headers: { "X-Authorization": `Bearer ${token}` } }
   );
   return res.json();
@@ -31,7 +26,7 @@ async function fetchHistory(token) {
   const endTs = Date.now();
   const startTs = endTs - 60 * 60 * 1000;
   const res = await fetch(
-    `/tb-api/api/plugins/telemetry/DEVICE/${DEVICE_ID}/values/timeseries?keys=${KEYS}&startTs=${startTs}&endTs=${endTs}&limit=20&agg=NONE`,
+    `${TB_URL}/api/plugins/telemetry/DEVICE/${DEVICE_ID}/values/timeseries?keys=${KEYS}&startTs=${startTs}&endTs=${endTs}&limit=20&agg=NONE`,
     { headers: { "X-Authorization": `Bearer ${token}` } }
   );
   return res.json();
