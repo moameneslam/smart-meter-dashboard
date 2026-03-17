@@ -25,12 +25,3 @@ export default async function handler(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
-```
-
----
-
-**Step 2 — Update `.env`** (remove VITE_ prefix):
-```
-TB_EMAIL=momoeslam0000@gmail.com
-TB_PASSWORD=m3Wnfb7cLWxMVuP
-TB_DEVICE_ID=72074ab0-224e-11f1-87fb-336ff60b6b9e
