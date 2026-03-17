@@ -1,34 +1,15 @@
-const DEVICE_ID = import.meta.env.VITE_TB_DEVICE_ID;
-const EMAIL = import.meta.env.VITE_TB_EMAIL;
-const PASSWORD = import.meta.env.VITE_TB_PASSWORD;
+import { useState, useEffect } from "react";
 const KEYS = "voltage,current_L1,current_L2,power_L1,power_L2,energy_L1,energy_L2";
-const TB_URL = "https://thingsboard.cloud";
 
-async function getToken() {
-  const res = await fetch(`${TB_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: EMAIL, password: PASSWORD })
-  });
-  const data = await res.json();
-  return data.token;
-}
-
-async function fetchLatest(token) {
-  const res = await fetch(
-    `${TB_URL}/api/plugins/telemetry/DEVICE/${DEVICE_ID}/values/timeseries?keys=${KEYS}`,
-    { headers: { "X-Authorization": `Bearer ${token}` } }
-  );
+async function fetchLatest() {
+  const res = await fetch(`/api/telemetry`);
   return res.json();
 }
 
-async function fetchHistory(token) {
+async function fetchHistory() {
   const endTs = Date.now();
   const startTs = endTs - 60 * 60 * 1000;
-  const res = await fetch(
-    `${TB_URL}/api/plugins/telemetry/DEVICE/${DEVICE_ID}/values/timeseries?keys=${KEYS}&startTs=${startTs}&endTs=${endTs}&limit=20&agg=NONE`,
-    { headers: { "X-Authorization": `Bearer ${token}` } }
-  );
+  const res = await fetch(`/api/telemetry?startTs=${startTs}&endTs=${endTs}`);
   return res.json();
 }
 
