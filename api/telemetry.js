@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   const EMAIL = process.env.TB_EMAIL;
   const PASSWORD = process.env.TB_PASSWORD;
   const DEVICE_ID = process.env.TB_DEVICE_ID;
-  const KEYS = "voltage,current_L1,current_L2,power_L1,power_L2,energy_L1,energy_L2";
+  const KEYS = "voltage,current_L1,current_L2,power_L1,power_L2,energy_L1,energy_L2,power_factor_L1,power_factor_L2,frequency";
 
   try {
     const loginRes = await fetch("https://thingsboard.cloud/api/auth/login", {

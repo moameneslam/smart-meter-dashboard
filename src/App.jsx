@@ -44,6 +44,9 @@ export default function App() {
         power_L2:   parseFloat(data.power_L2?.[0]?.value ?? 0).toFixed(1),
         energy_L1:  parseFloat(data.energy_L1?.[0]?.value ?? 0).toFixed(3),
         energy_L2:  parseFloat(data.energy_L2?.[0]?.value ?? 0).toFixed(3),
+        power_factor_L1: parseFloat(data.power_factor_L1?.[0]?.value ?? 0).toFixed(2),
+        power_factor_L2: parseFloat(data.power_factor_L2?.[0]?.value ?? 0).toFixed(2),
+        frequency:       parseFloat(data.frequency?.[0]?.value ?? 0).toFixed(1),
       });
       setLastUpdated(new Date().toLocaleTimeString());
       setError(null);
@@ -128,6 +131,13 @@ export default function App() {
         <StatCard title="Current — Load 2" value={live.current_L2} unit="A"   color="border-purple-400" />
         <StatCard title="Energy — Load 1"  value={live.energy_L1}  unit="kWh" color="border-orange-400" />
         <StatCard title="Energy — Load 2"  value={live.energy_L2}  unit="kWh" color="border-red-400" />
+      </div>
+
+      {/* Frequency + Power Factor */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <StatCard title="Frequency"         value={live.frequency}        unit="Hz" color="border-teal-400" />
+        <StatCard title="Power Factor — L1" value={live.power_factor_L1}  unit="PF" color="border-green-300" />
+        <StatCard title="Power Factor — L2" value={live.power_factor_L2}  unit="PF" color="border-purple-300" />
       </div>
 
       <div className="bg-white rounded-2xl shadow p-5 mb-6 flex items-center justify-between">
