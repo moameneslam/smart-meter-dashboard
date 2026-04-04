@@ -3,12 +3,13 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    proxy: {
-      '/tb-api': {
-        target: 'https://thingsboard.cloud',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/tb-api/, '')
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          recharts: ['recharts'],
+          react: ['react', 'react-dom'],
+        }
       }
     }
   }

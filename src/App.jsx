@@ -3,6 +3,21 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
+import { lazy, Suspense } from "react";
+import { useState, useEffect } from "react";
+
+const LineChart = lazy(() => import('recharts').then(m => ({ default: m.LineChart })));
+
+if (!lastUpdated && !error) {
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-6xl mb-4">⚡</div>
+        <p className="text-gray-500 text-lg">Connecting to NexaGrid...</p>
+      </div>
+    </div>
+  );
+}
 
 async function fetchLatest() {
   const res = await fetch(`/api/telemetry`);
