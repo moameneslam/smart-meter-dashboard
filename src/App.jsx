@@ -3,21 +3,6 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
-import { lazy, Suspense } from "react";
-import { useState, useEffect } from "react";
-
-const LineChart = lazy(() => import('recharts').then(m => ({ default: m.LineChart })));
-
-if (!lastUpdated && !error) {
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="text-center">
-        <div className="text-6xl mb-4">⚡</div>
-        <p className="text-gray-500 text-lg">Connecting to NexaGrid...</p>
-      </div>
-    </div>
-  );
-}
 
 async function fetchLatest() {
   const res = await fetch(`/api/telemetry`);
@@ -101,15 +86,26 @@ export default function App() {
     { name: "Load 2", power: parseFloat(live.power_L2 ?? 0), energy: parseFloat(live.energy_L2 ?? 0) },
   ];
 
+  if (!lastUpdated && !error) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">⚡</div>
+          <p className="text-gray-500 text-lg">Connecting to NexaGrid...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">⚡ Smart Meter Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-800">⚡ NexaGrid Dashboard</h1>
           <p className="text-gray-500 text-sm mt-1">
             {error
               ? <span className="text-red-500">{error}</span>
-              : `Last updated: ${lastUpdated ?? "loading..."}`}
+              : `Last updated: ${lastUpdated}`}
           </p>
         </div>
         <button

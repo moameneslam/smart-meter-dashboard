@@ -6,9 +6,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          recharts: ['recharts'],
-          react: ['react', 'react-dom'],
+        manualChunks(id) {
+          if (id.includes('recharts')) return 'recharts'
+          if (id.includes('react-dom') || id.includes('react/')) return 'react'
         }
       }
     }
