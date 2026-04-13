@@ -8,7 +8,7 @@ export interface Telemetry {
   frequency: number;     // Hz
   powerFactor: number;   // 0–1
   energy: number;        // kWh today
-  // Load split (if your ESP publishes per-load keys)
+  // Load split
   load1Power: number;
   load2Power: number;
   load1Current: number;
@@ -28,20 +28,29 @@ const DEFAULT: Telemetry = {
 
 /**
  * Maps Thingsboard telemetry key names to our Telemetry fields.
- * Adjust these to match whatever keys your ESP32 firmware publishes.
  */
 function mapKeys(raw: Record<string, number>): Partial<Telemetry> {
+  const v = raw['voltage'] ?? 0;
+  const pL1 = raw['power_L1'] ?? 0;
+  const pL2 = raw['power_L2'] ?? 0;
+  
   return {
-    voltage:      raw['rms_voltage']    ?? raw['voltage']      ?? 0,
-    current:      raw['rms_current']    ?? raw['current']      ?? 0,
-    power:        (raw['active_power']  ?? raw['power']        ?? 0) / 1000, // W → kW
-    frequency:    raw['frequency']      ?? 50,
-    powerFactor:  raw['power_factor']   ?? raw['pf']           ?? 0,
-    energy:       raw['energy_kwh']     ?? raw['energy']       ?? 0,
-    load1Power:   (raw['load1_power']   ?? raw['load1_w']      ?? 0) / 1000,
-    load2Power:   (raw['load2_power']   ?? raw['load2_w']      ?? 0) / 1000,
-    load1Current: raw['load1_current']  ?? raw['load1_a']      ?? 0,
-    load2Current: raw['load2_current']  ?? raw['load2_a']      ?? 0,
+    voltage:      v,
+    frequency:    raw['frequency'] ?? 50,
+    
+    // Sum L1 and L2 for total metrics
+    current:      (raw['current_L1'] ?? 0) + (raw['current_L2'] ?? 0),
+    power:        (pL1 + pL2) / 1000, // Convert Total Watts to kW
+    energy:       (raw['energy_L1'] ?? 0) + (raw['energy_L2'] ?? 0),
+    
+    // Average power factor
+    powerFactor:  ((raw['power_factor_L1'] ?? 0) + (raw['power_factor_L2'] ?? 0)) / 2,
+    
+    // Individual load breakdowns (Convert W to kW)
+    load1Power:   pL1 / 1000,
+    load2Power:   pL2 / 1000,
+    load1Current: raw['current_L1'] ?? 0,
+    load2Current: raw['current_L2'] ?? 0,
   };
 }
 
@@ -108,25 +117,29 @@ export function useHistory() {
       try {
         const endTs   = Date.now();
         const startTs = endTs - 24 * 60 * 60 * 1000;
+        
+        // Updated keys requested from Thingsboard History API
         const params  = new URLSearchParams({
-          keys: 'load1_power,load2_power',
+          keys: 'power_L1,power_L2', 
           startTs: String(startTs),
           endTs:   String(endTs),
           interval: String(60 * 60 * 1000), // 1-hour buckets
           agg: 'AVG',
           limit: '24',
         });
-        const res  = await fetch(`/api/telemetry/history?${params}`);
+        const res  = await fetch(`/api/telemetry-history?${params}`); // Note: Make sure the route matches the filename in /api/
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
 
-        // Build time series — merge load1 and load2 by timestamp
+        // Build time series — merge L1 and L2 by timestamp
         const l1: Record<number, number> = {};
         const l2: Record<number, number> = {};
-        (json.load1_power ?? []).forEach((p: { ts: number; value: string }) => {
+        
+        // Map the new key responses
+        (json.power_L1 ?? []).forEach((p: { ts: number; value: string }) => {
           l1[p.ts] = parseFloat(p.value) / 1000;
         });
-        (json.load2_power ?? []).forEach((p: { ts: number; value: string }) => {
+        (json.power_L2 ?? []).forEach((p: { ts: number; value: string }) => {
           l2[p.ts] = parseFloat(p.value) / 1000;
         });
 
