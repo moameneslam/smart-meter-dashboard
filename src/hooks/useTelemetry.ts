@@ -74,7 +74,9 @@ export function useTelemetry(intervalMs = 2000) {
       }
 
       // If data is older than 60 seconds (60000ms), consider ESP offline
-      const isFresh = Date.now() - latestTs < 60000;
+      const timeDiff = Date.now() - latestTs;
+      // Account for up to 60 seconds of clock skew if the browser is behind the server
+      const isFresh = timeDiff > -60000 && timeDiff < 60000;
 
       if (isFresh) {
         setData(prev => ({
