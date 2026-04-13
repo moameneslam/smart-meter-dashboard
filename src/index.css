@@ -1,9 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-body { background: #0D1117; color: #E6EDF3; font-family: 'Inter', sans-serif; }
-::-webkit-scrollbar { width: 6px; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background: #0D1117;
+  color: #E6EDF3;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #161B22; }
 ::-webkit-scrollbar-thumb { background: #30363D; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #8B949E; }
+
+/* Remove button defaults */
+button { font-family: inherit; }
+
+/* Recharts overrides */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line { stroke: #30363D; }
+.recharts-tooltip-wrapper { outline: none; }
