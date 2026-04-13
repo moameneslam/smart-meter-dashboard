@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TopNav, type Tab } from './components/TopNav';
+import { TopNav } from './components/TopNav';
 import { Overview }  from './pages/Overview';
 import { Loads }     from './pages/Loads';
 import { Analytics } from './pages/Analytics';
