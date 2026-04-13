@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    tailwindcss(), // Added Tailwind v4 plugin here
+  ],
   build: {
     rollupOptions: {
       output: {
@@ -15,10 +18,3 @@ export default defineConfig({
     }
   }
 })
-
-export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
-});
